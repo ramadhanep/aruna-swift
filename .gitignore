@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+
+# Xcode user-specific
+xcuserdata/
+*.xcuserstate
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# CocoaPods
+Pods/
+
+# Secrets
+Config/Config.xcconfig
+
+# General
+DerivedData/
+*.xcworkspace/xcshareddata/swiftpm/

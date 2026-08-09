@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		77957EB63028B24E00E62088 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = AA01000000000000000000A4 /* Supabase */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		773A01933028A88F00B4002B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		773A01853028A88F00B4002B /* aruna.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = aruna.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		773A01923028A88F00B4002B /* arunaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = arunaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		773A019C3028A88F00B4002B /* arunaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = arunaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA01000000000000000000A1 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				77957EB63028B24E00E62088 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +84,7 @@
 				773A01873028A88F00B4002B /* aruna */,
 				773A01953028A88F00B4002B /* arunaTests */,
 				773A019F3028A88F00B4002B /* arunaUITests */,
+				AA01000000000000000000A2 /* Config */,
 				773A01863028A88F00B4002B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +97,14 @@
 				773A019C3028A88F00B4002B /* arunaUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		AA01000000000000000000A2 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				AA01000000000000000000A1 /* Config.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +127,7 @@
 			);
 			name = aruna;
 			packageProductDependencies = (
+				AA01000000000000000000A4 /* Supabase */,
 			);
 			productName = aruna;
 			productReference = 773A01853028A88F00B4002B /* aruna.app */;
@@ -195,6 +211,9 @@
 			);
 			mainGroup = 773A017C3028A88E00B4002B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AA01000000000000000000A3 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 773A01863028A88F00B4002B /* Products */;
 			projectDirPath = "";
@@ -271,6 +290,7 @@
 /* Begin XCBuildConfiguration section */
 		773A01A43028A88F00B4002B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AA01000000000000000000A1 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -335,6 +355,7 @@
 		};
 		773A01A53028A88F00B4002B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AA01000000000000000000A1 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -400,6 +421,7 @@
 				DEVELOPMENT_TEAM = TNSWYK8BKZ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Supporting/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -432,6 +454,7 @@
 				DEVELOPMENT_TEAM = TNSWYK8BKZ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Supporting/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -578,6 +601,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AA01000000000000000000A3 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase-community/supabase-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AA01000000000000000000A4 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA01000000000000000000A3 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 773A017D3028A88F00B4002B /* Project object */;
 }

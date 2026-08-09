@@ -1,0 +1,16 @@
+// Aruna build configuration — template.
+//
+// Copy this file to Config.xcconfig and fill in real values locally.
+// NEVER commit Config.xcconfig; it contains real secrets.
+//
+// AppConfig resolves each value from the process environment first, then from
+// the app Info.plist, which reads these $(VARIABLE)s at build time.
+
+API_BASE_URL = https:/$()/aruna.rdyy.me/api
+
+OAUTH_REDIRECT_URL = aruna:/$()/login-callback/
+
+SUPABASE_URL = https:/$()/YOUR_PROJECT.supabase.co
+SUPABASE_ANON_KEY = YOUR_SUPABASE_ANON_KEY
+
+SECURE_PAYLOAD_KEY = YOUR_SECURE_PAYLOAD_KEY

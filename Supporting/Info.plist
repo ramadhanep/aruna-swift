@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDisplayName</key>
+	<string>Aruna</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>aruna.auth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>aruna</string>
+			</array>
+		</dict>
+	</array>
+	<key>ARUNA_API_BASE_URL</key>
+	<string>$(API_BASE_URL)</string>
+	<key>SUPABASE_URL</key>
+	<string>$(SUPABASE_URL)</string>
+	<key>SUPABASE_ANON_KEY</key>
+	<string>$(SUPABASE_ANON_KEY)</string>
+	<key>SECURE_PAYLOAD_KEY</key>
+	<string>$(SECURE_PAYLOAD_KEY)</string>
+	<key>ARUNA_OAUTH_REDIRECT_URL</key>
+	<string>$(OAUTH_REDIRECT_URL)</string>
+</dict>
+</plist>
