@@ -54,7 +54,9 @@ final class arunaUITests: XCTestCase {
 
     private func openWatchlist(_ app: XCUIApplication) {
         XCTAssertTrue(app.staticTexts["Portfolio"].waitForExistence(timeout: 10))
-        app.buttons["Watchlist"].tap()
+        let watchlistTab = app.tabBars.buttons["Watchlist"]
+        XCTAssertTrue(watchlistTab.exists, "Native Watchlist tab must exist")
+        watchlistTab.tap()
     }
 
     private func openAddSymbolSheet(_ app: XCUIApplication) {
@@ -103,15 +105,21 @@ final class arunaUITests: XCTestCase {
         let app = launchApp(reset: true, apiMock: true)
         XCTAssertTrue(app.staticTexts["Portfolio"].waitForExistence(timeout: 10))
 
-        app.buttons["Watchlist"].tap()
+        let tabBar = app.tabBars.firstMatch
+        XCTAssertTrue(tabBar.waitForExistence(timeout: 5))
+        XCTAssertTrue(tabBar.buttons["Portfolio"].exists, "Portfolio tab must exist")
+        XCTAssertTrue(tabBar.buttons["Watchlist"].exists, "Watchlist tab must exist")
+        XCTAssertTrue(tabBar.buttons["Account"].exists, "Account tab must exist")
+
+        tabBar.buttons["Watchlist"].tap()
         XCTAssertTrue(app.staticTexts["BBCA.JK"].waitForExistence(timeout: 10))
 
-        app.buttons["Account"].tap()
+        tabBar.buttons["Account"].tap()
         XCTAssertTrue(app.staticTexts["Synced"].waitForExistence(timeout: 10)
             || app.staticTexts["Guest"].waitForExistence(timeout: 10)
             || app.staticTexts["Local"].waitForExistence(timeout: 10))
 
-        app.buttons["Portfolio"].tap()
+        tabBar.buttons["Portfolio"].tap()
         XCTAssertTrue(app.staticTexts["Portfolio tracking arrives in Phase 4."].waitForExistence(timeout: 10))
     }
 
@@ -119,7 +127,7 @@ final class arunaUITests: XCTestCase {
 
     func testAppearanceSelectionPersistsAcrossRelaunch() throws {
         var app = launchApp(reset: true)
-        app.buttons["Account"].tap()
+        app.tabBars.buttons["Account"].tap()
         XCTAssertTrue(app.buttons["Appearance, Dark"].waitForExistence(timeout: 10))
 
         app.buttons["Appearance, Dark"].tap()
@@ -128,7 +136,7 @@ final class arunaUITests: XCTestCase {
         app.terminate()
 
         app = launchApp()
-        app.buttons["Account"].tap()
+        app.tabBars.buttons["Account"].tap()
         XCTAssertTrue(
             app.buttons["Appearance, Light"].waitForExistence(timeout: 10),
             "Appearance selection should survive relaunch"
@@ -137,7 +145,7 @@ final class arunaUITests: XCTestCase {
 
     func testPrivacyTogglePersistsAcrossRelaunch() throws {
         var app = launchApp(reset: true)
-        app.buttons["Account"].tap()
+        app.tabBars.buttons["Account"].tap()
         XCTAssertTrue(app.buttons["Privacy mode, Off"].waitForExistence(timeout: 10))
 
         app.buttons["Privacy mode, Off"].tap()
@@ -145,7 +153,7 @@ final class arunaUITests: XCTestCase {
         app.terminate()
 
         app = launchApp()
-        app.buttons["Account"].tap()
+        app.tabBars.buttons["Account"].tap()
         XCTAssertTrue(
             app.buttons["Privacy mode, On"].waitForExistence(timeout: 10),
             "Privacy toggle should survive relaunch"

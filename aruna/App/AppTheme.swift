@@ -172,12 +172,8 @@ enum ArunaSpacing {
     static let summaryVertical: CGFloat = 16
     static let warning: CGFloat = 14
     static let sheetHorizontal: CGFloat = 20
-    static let listBottom: CGFloat = 120
     static let rowEdgeInsets = EdgeInsets(top: 12, leading: 20, bottom: 12, trailing: 16)
     static let toolbarHeight: CGFloat = 52
-    static let tabBarHeight: CGFloat = 62
-    static let tabBarHorizontal: CGFloat = 16
-    static let tabBarBottom: CGFloat = 10
 }
 
 // MARK: - Radius
@@ -189,7 +185,6 @@ enum ArunaRadius {
     static let button: CGFloat = 10
     static let input: CGFloat = 10
     static let sheetTop: CGFloat = 16
-    static let tabBar: CGFloat = 22
     static let listGroup: CGFloat = 12
     static let badge: CGFloat = 9
     static let emojiTile: CGFloat = 10

@@ -147,7 +147,6 @@ struct WatchlistView: View {
         .refreshable {
             await viewModel.refreshQuotes()
         }
-        .arunaScrollSensitive()
     }
 
     private func warningCard(message: String, icon: String, color: Color) -> some View {
