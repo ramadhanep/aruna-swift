@@ -68,8 +68,9 @@ final class arunaUITests: XCTestCase {
     // MARK: - Boot
 
     /// Unconfigured/local environment: app resolves straight into the shell.
+    /// `apiMock` keeps the Portfolio tab's FX fetch offline and deterministic.
     func testBootResolvesToLocalModeAndShowsPortfolio() throws {
-        let app = launchApp(reset: true)
+        let app = launchApp(reset: true, apiMock: true)
 
         XCTAssertTrue(
             app.staticTexts["Portfolio"].waitForExistence(timeout: 10),
@@ -91,7 +92,7 @@ final class arunaUITests: XCTestCase {
 
     /// From Sign In, "Use local mode" enters the shell (Portfolio tab).
     func testUseLocalModeEntersShell() throws {
-        let app = launchApp(reset: true, supabaseConfigured: true)
+        let app = launchApp(reset: true, supabaseConfigured: true, apiMock: true)
         XCTAssertTrue(app.staticTexts["Sign in"].waitForExistence(timeout: 10))
 
         app.buttons["Use local mode"].tap()
@@ -120,13 +121,13 @@ final class arunaUITests: XCTestCase {
             || app.staticTexts["Local"].waitForExistence(timeout: 10))
 
         tabBar.buttons["Portfolio"].tap()
-        XCTAssertTrue(app.staticTexts["Portfolio tracking arrives in Phase 4."].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["No holdings"].waitForExistence(timeout: 10))
     }
 
     // MARK: - Persistence
 
     func testAppearanceSelectionPersistsAcrossRelaunch() throws {
-        var app = launchApp(reset: true)
+        var app = launchApp(reset: true, apiMock: true)
         app.tabBars.buttons["Account"].tap()
         XCTAssertTrue(app.buttons["Appearance, Dark"].waitForExistence(timeout: 10))
 
@@ -144,7 +145,7 @@ final class arunaUITests: XCTestCase {
     }
 
     func testPrivacyTogglePersistsAcrossRelaunch() throws {
-        var app = launchApp(reset: true)
+        var app = launchApp(reset: true, apiMock: true)
         app.tabBars.buttons["Account"].tap()
         XCTAssertTrue(app.buttons["Privacy mode, Off"].waitForExistence(timeout: 10))
 
@@ -328,7 +329,7 @@ final class arunaUITests: XCTestCase {
 
     /// Forced empty repository renders the empty state.
     func testWatchlistEmptyState() throws {
-        let app = launchApp(reset: true, watchlistMode: "-uitest-watchlist-empty")
+        let app = launchApp(reset: true, apiMock: true, watchlistMode: "-uitest-watchlist-empty")
         openWatchlist(app)
 
         XCTAssertTrue(app.staticTexts["No symbols"].waitForExistence(timeout: 10))
@@ -337,18 +338,141 @@ final class arunaUITests: XCTestCase {
 
     /// Forced repository failure renders the error state with Retry.
     func testWatchlistErrorState() throws {
-        let app = launchApp(reset: true, watchlistMode: "-uitest-watchlist-fail")
+        let app = launchApp(reset: true, apiMock: true, watchlistMode: "-uitest-watchlist-fail")
         openWatchlist(app)
 
         XCTAssertTrue(app.buttons["Retry"].waitForExistence(timeout: 10))
+    }
+
+    // MARK: - Portfolio
+
+    private func addDigitalHolding(_ app: XCUIApplication) {
+        XCTAssertTrue(app.staticTexts["No holdings"].waitForExistence(timeout: 10))
+        app.buttons["Add holding"].tap()
+
+        let symbol = app.textFields["Symbol"]
+        XCTAssertTrue(symbol.waitForExistence(timeout: 5))
+        symbol.tap()
+        symbol.typeText("NVDA")
+
+        let amount = app.textFields["Amount"]
+        amount.tap()
+        amount.typeText("10")
+
+        let price = app.textFields["Average price"]
+        price.tap()
+        price.typeText("100")
+
+        app.buttons["Save holding"].tap()
+        XCTAssertTrue(app.staticTexts["NVDA"].waitForExistence(timeout: 10))
+    }
+
+    /// Empty portfolio renders the empty state with the add action available.
+    func testPortfolioEmptyState() throws {
+        let app = launchApp(reset: true, apiMock: true)
+
+        XCTAssertTrue(app.staticTexts["No holdings"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Add a position to track total value and profit/loss."].exists)
+        XCTAssertTrue(app.buttons["Add holding"].exists)
+    }
+
+    /// Add a digital holding via the sheet; it appears in the list.
+    func testPortfolioAddDigitalHolding() throws {
+        let app = launchApp(reset: true, apiMock: true)
+        addDigitalHolding(app)
+    }
+
+    /// Add a cash bucket (IDR FX served by the mock); it appears with its label.
+    func testPortfolioAddCashHolding() throws {
+        let app = launchApp(reset: true, apiMock: true)
+        XCTAssertTrue(app.staticTexts["No holdings"].waitForExistence(timeout: 10))
+        app.buttons["Add holding"].tap()
+
+        XCTAssertTrue(app.buttons["Cash"].waitForExistence(timeout: 5))
+        app.buttons["Cash"].tap()
+
+        let label = app.textFields["Cash label"]
+        XCTAssertTrue(label.waitForExistence(timeout: 5))
+        label.tap()
+        label.typeText("Emergency fund")
+
+        let amount = app.textFields["Amount"]
+        amount.tap()
+        amount.typeText("1000000")
+
+        app.buttons["Save holding"].tap()
+        XCTAssertTrue(app.staticTexts["Emergency fund"].waitForExistence(timeout: 10))
+    }
+
+    /// Swipe Delete opens the confirmation dialog; confirming removes the row.
+    func testPortfolioDeleteConfirmationAppears() throws {
+        let app = launchApp(reset: true, apiMock: true)
+        addDigitalHolding(app)
+
+        let row = app.buttons["portfolio-row-NVDA"]
+        XCTAssertTrue(row.waitForExistence(timeout: 10))
+        row.swipeLeft()
+
+        XCTAssertTrue(app.buttons["Delete"].waitForExistence(timeout: 5))
+        app.buttons["Delete"].tap()
+
+        let alert = app.alerts["Delete item?"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 5))
+        XCTAssertTrue(alert.staticTexts["This cannot be undone."].exists)
+        alert.buttons["Delete"].tap()
+
+        let gone = NSPredicate(format: "exists == false")
+        expectation(for: gone, evaluatedWith: row)
+        waitForExpectations(timeout: 10)
+        XCTAssertFalse(app.staticTexts["NVDA"].exists)
+    }
+
+    /// Allocation sheet opens and shows chart sections.
+    func testPortfolioAllocationSheetOpens() throws {
+        let app = launchApp(reset: true, apiMock: true)
+        addDigitalHolding(app)
+
+        XCTAssertTrue(app.buttons["Allocation"].waitForExistence(timeout: 10))
+        app.buttons["Allocation"].tap()
+
+        XCTAssertTrue(app.staticTexts["Allocation"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Asset mix"].exists)
+        XCTAssertTrue(app.staticTexts["Digital allocation"].exists)
+    }
+
+    /// Privacy censor masks sensitive values on the Portfolio screen. Censored
+    /// values carry Flutter-parity hidden semantics ("Hidden value",
+    /// "Hidden profit and loss value", "Hidden quantity") instead of the raw
+    /// masked string, so the UI test asserts those semantics.
+    func testPortfolioPrivacyCensorRendersCensoredValues() throws {
+        let app = launchApp(reset: true, apiMock: true)
+        addDigitalHolding(app)
+
+        let hideButton = app.buttons["Hide sensitive values"]
+        XCTAssertTrue(hideButton.waitForExistence(timeout: 10))
+        hideButton.tap()
+
+        XCTAssertTrue(app.staticTexts["Hidden value"].waitForExistence(timeout: 5), "net worth must be masked")
+        XCTAssertTrue(app.staticTexts["Hidden profit and loss value"].exists, "P/L amount must be masked")
+        XCTAssertTrue(app.staticTexts["Hidden quantity"].exists, "quantity must be masked")
+        XCTAssertTrue(app.staticTexts["Hidden market value"].exists, "holding value must be masked")
+
+        app.buttons["Show sensitive values"].tap()
+        XCTAssertFalse(app.staticTexts["Hidden value"].exists, "values must be restored when censor is off")
     }
 
     // MARK: - Performance
 
     @MainActor
     func testLaunchPerformance() throws {
+        // Configure the launched app to stay offline (local mode + API mock);
+        // the Portfolio tab fetches FX on load.
         measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
+            let app = XCUIApplication()
+            app.launchArguments = ["-uitest-reset", "-uitest-api-mock"]
+            app.launchEnvironment["SUPABASE_URL"] = "https://<your-project>.supabase.co"
+            app.launchEnvironment["SUPABASE_ANON_KEY"] = "<your-anon-key>"
+            app.launch()
         }
     }
 }

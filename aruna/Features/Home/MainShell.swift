@@ -27,9 +27,7 @@ struct MainShell: View {
 
 private struct PortfolioTab: View {
     var body: some View {
-        NavigationStack {
-            PhasePendingView(title: "Portfolio", icon: "wallet.bifold", message: "Portfolio tracking arrives in Phase 4.")
-        }
+        PortfolioView()
     }
 }
 

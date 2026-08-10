@@ -30,6 +30,9 @@ protocol AuthService: AnyObject {
     /// Supabase-backed watchlist remote persistence, or `nil` when Supabase is
     /// unconfigured (local/guest mode uses local persistence only).
     var watchlistRemoteStore: (any WatchlistRemoteStore)? { get }
+    /// Supabase-backed portfolio remote persistence, or `nil` when Supabase is
+    /// unconfigured (local/guest mode uses local persistence only).
+    var portfolioRemoteStore: (any PortfolioRemoteStore)? { get }
 }
 
 @MainActor
@@ -48,11 +51,15 @@ final class SupabaseAuthService: AuthService {
     init(client: SupabaseClient? = nil) {
         self.client = client ?? Self.makeClient()
         self.watchlistRemoteStore = self.client.map { SupabaseWatchlistRemoteStore(client: $0) }
+        self.portfolioRemoteStore = self.client.map { SupabasePortfolioRemoteStore(client: $0) }
     }
 
     /// Supabase-backed remote persistence, or `nil` when no client is present
     /// (local/guest mode).
     let watchlistRemoteStore: (any WatchlistRemoteStore)?
+    /// Supabase-backed portfolio remote persistence, or `nil` when no client is
+    /// present (local/guest mode).
+    let portfolioRemoteStore: (any PortfolioRemoteStore)?
 
     /// PKCE + auto-refresh + session persistence are configured at client
     /// creation. Session persistence uses the SDK's default local storage.

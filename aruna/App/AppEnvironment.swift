@@ -30,6 +30,7 @@ final class AppEnvironment {
     let storage: ArunaStorage
     let authService: any AuthService
     let watchlistRepository: WatchlistRepository
+    let portfolioRepository: PortfolioRepository
 
     var themeMode: ArunaThemeMode {
         didSet { storage.set(themeMode.rawValue, forKey: ArunaStorage.Key.themeMode) }
@@ -49,7 +50,8 @@ final class AppEnvironment {
         apiClient: APIClient,
         storage: ArunaStorage,
         authService: (any AuthService)? = nil,
-        watchlistLoadOverride: WatchlistLoadOverride = .normal
+        watchlistLoadOverride: WatchlistLoadOverride = .normal,
+        portfolioLoadOverride: PortfolioLoadOverride = .normal
     ) {
         self.apiClient = apiClient
         self.marketRepository = MarketRepository(apiClient: apiClient)
@@ -61,6 +63,11 @@ final class AppEnvironment {
             storage: storage,
             remoteStore: self.authService.watchlistRemoteStore,
             loadOverride: watchlistLoadOverride
+        )
+        self.portfolioRepository = PortfolioRepository(
+            storage: storage,
+            remoteStore: self.authService.portfolioRemoteStore,
+            loadOverride: portfolioLoadOverride
         )
     }
 
@@ -114,7 +121,8 @@ final class AppEnvironment {
                 session: session
             ),
             storage: ArunaStorage(),
-            watchlistLoadOverride: configuration.watchlistOverride
+            watchlistLoadOverride: configuration.watchlistOverride,
+            portfolioLoadOverride: configuration.portfolioOverride
         )
     }
 

@@ -22,6 +22,7 @@ final class MockAuthService: AuthService {
     var signOutError: Error?
     var currentUser: AuthUser?
     var watchlistRemoteStore: (any WatchlistRemoteStore)?
+    var portfolioRemoteStore: (any PortfolioRemoteStore)?
 
     private let stream: AsyncStream<Bool>
     private let continuation: AsyncStream<Bool>.Continuation
@@ -33,7 +34,8 @@ final class MockAuthService: AuthService {
         signInResult: Bool = true,
         signOutError: Error? = nil,
         currentUser: AuthUser? = nil,
-        watchlistRemoteStore: (any WatchlistRemoteStore)? = nil
+        watchlistRemoteStore: (any WatchlistRemoteStore)? = nil,
+        portfolioRemoteStore: (any PortfolioRemoteStore)? = nil
     ) {
         self.isConfigured = isConfigured
         self.hasSession = hasSession
@@ -42,6 +44,7 @@ final class MockAuthService: AuthService {
         self.signOutError = signOutError
         self.currentUser = currentUser
         self.watchlistRemoteStore = watchlistRemoteStore
+        self.portfolioRemoteStore = portfolioRemoteStore
         (self.stream, self.continuation) = AsyncStream.makeStream(of: Bool.self)
     }
 
@@ -96,5 +99,27 @@ final class MockWatchlistRemoteStore: WatchlistRemoteStore {
         upsertCallCount += 1
         if let upsertError { throw upsertError }
         upsertedItems = items
+    }
+}
+
+/// Deterministic portfolio remote-store double. `entriesToReturn = nil` means
+/// "no remote data" (local fallback); `loadError` simulates a Supabase failure.
+@MainActor
+final class MockPortfolioRemoteStore: PortfolioRemoteStore {
+    var entriesToReturn: [PortfolioHolding]?
+    var loadError: Error?
+    var upsertError: Error?
+    private(set) var upsertedEntries: [PortfolioHolding]?
+    private(set) var upsertCallCount = 0
+
+    func loadEntries() async throws -> [PortfolioHolding]? {
+        if let loadError { throw loadError }
+        return entriesToReturn
+    }
+
+    func upsertEntries(_ entries: [PortfolioHolding]) async throws {
+        upsertCallCount += 1
+        if let upsertError { throw upsertError }
+        upsertedEntries = entries
     }
 }

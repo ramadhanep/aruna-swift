@@ -9,6 +9,8 @@ enum UITestSupport {
         let arguments = ProcessInfo.processInfo.arguments
         if arguments.contains("-uitest-watchlist-empty") { return .watchlistEmpty }
         if arguments.contains("-uitest-watchlist-fail") { return .watchlistFail }
+        if arguments.contains("-uitest-portfolio-empty") { return .portfolioEmpty }
+        if arguments.contains("-uitest-portfolio-fail") { return .portfolioFail }
         if arguments.contains("-uitest-api-mock") { return .mockAPI }
         return .none
     }
@@ -25,12 +27,22 @@ enum UITestConfiguration: Equatable {
     case mockAPI
     case watchlistEmpty
     case watchlistFail
+    case portfolioEmpty
+    case portfolioFail
 
     var watchlistOverride: WatchlistLoadOverride {
         switch self {
         case .watchlistEmpty: return .forceEmpty
         case .watchlistFail: return .forceFailure
-        case .none, .mockAPI: return .normal
+        case .none, .mockAPI, .portfolioEmpty, .portfolioFail: return .normal
+        }
+    }
+
+    var portfolioOverride: PortfolioLoadOverride {
+        switch self {
+        case .portfolioEmpty: return .forceEmpty
+        case .portfolioFail: return .forceFailure
+        case .none, .mockAPI, .watchlistEmpty, .watchlistFail: return .normal
         }
     }
 }
@@ -126,12 +138,20 @@ final class UITestURLProtocol: URLProtocol {
                 let payload = try JSONSerialization.data(withJSONObject: ["symbols": results])
                 return (200, payload)
             }
+        case ("GET", let p) where p.hasSuffix("/finance"):
+            let symbol = query.first { $0.name == "symbol" }?.value ?? ""
+            let price: Double = symbol == "SGD=X" ? 1.35 : 16_000
+            let rows: [[String: Any]] = [
+                ["symbol": symbol, "date": "2026-08-09T12:00:00.000000", "adjclose": price]
+            ]
+            let payload = try JSONSerialization.data(withJSONObject: ["data": rows])
+            return (200, payload)
         default:
             return (200, Data("{}".utf8))
         }
     }
 
-    private static func requestBody(_ request: URLRequest) throws -> Data {
+    nonisolated private static func requestBody(_ request: URLRequest) throws -> Data {
         if let body = request.httpBody { return body }
         if let stream = request.httpBodyStream {
             stream.open()

@@ -45,6 +45,9 @@ struct ArunaStorage {
         defaults.removeObject(forKey: Key.themeMode)
         defaults.removeObject(forKey: Key.privacyCensorEnabled)
         defaults.removeObject(forKey: Key.watchlist)
+        defaults.removeObject(forKey: Key.portfolio)
+        defaults.removeObject(forKey: Key.portfolioSort)
+        defaults.removeObject(forKey: Key.portfolioCurrency)
     }
 
     /// Decodes a JSON value previously stored via `setJSON`.
